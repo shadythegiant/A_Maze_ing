@@ -54,6 +54,9 @@ class ASCIIVisualizer:
         return "\n".join(output_lines)
 
     def render_thick(self, grid: List[List[int]], pattern_coords: set = None, entry: tuple = None, exit: tuple = None) -> str:
+        """
+        Renders the maze with ULTRA-WIDE cells (6 chars wide) to force a square look.
+        """
         if pattern_coords is None:
             pattern_coords = set()
 

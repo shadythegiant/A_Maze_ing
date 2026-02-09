@@ -24,7 +24,7 @@ def main():
     height = config['HEIGHT']
     entry = config['ENTRY']
     exit_point = config['EXIT']
-
+    is_perfect = config.get('PERFECT', True)
     # 3. Initialize Generator Logic
     # We create the instance, but we don't run .generate() yet.
     # The App will handle that.
@@ -37,7 +37,7 @@ def main():
 
     # 4. Launch the Visualization
     # The App takes ownership of the generator instance.
-    app = MazeApp(maze_gen, entry, exit_point)
+    app = MazeApp(maze_gen, entry, exit_point, is_perfect)
     app.run()
 
 

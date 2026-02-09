@@ -70,7 +70,6 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-        # 3. Apply Imperfection (NEW)
         if not perfect:
             self.make_imperfect()
 
