@@ -54,7 +54,6 @@ class ASCIIVisualizer:
         return "\n".join(output_lines)
 
     def render_thick(self, grid: List[List[int]], pattern_coords: set = None, entry: tuple = None, exit: tuple = None) -> str:
-
         if pattern_coords is None:
             pattern_coords = set()
 
@@ -66,9 +65,12 @@ class ASCIIVisualizer:
 
         BLOCK = '█'
         SPACE = ' '
-        P42 = '▓'
-        ENTRY_MARKER = ' ●'
-        EXIT_MARKER = ' ◉'
+        P42 = '▒'
+        BODY_WIDTH = 5
+
+        # Centered markers for 5-space width
+        ENTRY_MARKER = '  ●  '
+        EXIT_MARKER = '  ◉  '
 
         for y in range(height):
             line_top = ""
@@ -78,33 +80,36 @@ class ASCIIVisualizer:
                 cell = grid[y][x]
                 is_42 = (x, y) in pattern_coords
 
-                # --- Determine Bottom Center Content ---
+                # --- Determine Center Content ---
                 if (x, y) == entry:
                     center_char = ENTRY_MARKER
                 elif (x, y) == exit:
                     center_char = EXIT_MARKER
                 else:
-                    center_char = SPACE * 2
+                    center_char = SPACE * BODY_WIDTH
 
                 wall_brush = P42 if is_42 else BLOCK
 
                 # --- Top Half ---
-                line_top += wall_brush  # Corner
+                line_top += wall_brush  # Corner (1 char)
 
                 if is_42:
-                    line_top += wall_brush * 2
+                    line_top += wall_brush * BODY_WIDTH
                 else:
-                    line_top += (BLOCK * 2) if (cell & NORTH) else (SPACE * 2)
+                    # North Wall or Open Space
+                    line_top += (BLOCK * BODY_WIDTH) if (cell &
+                                                         NORTH) else (SPACE * BODY_WIDTH)
 
                 # --- Bottom Half ---
+                # West Wall (1 char)
                 if is_42:
                     line_bot += wall_brush
                 else:
                     line_bot += BLOCK if (cell & WEST) else SPACE
 
-                # Center Body
+                # Center Body (5 chars)
                 if is_42:
-                    line_bot += wall_brush * 2
+                    line_bot += wall_brush * BODY_WIDTH
                 else:
                     line_bot += center_char
 
@@ -118,6 +123,7 @@ class ASCIIVisualizer:
             output_lines.append(line_top)
             output_lines.append(line_bot)
 
+        # --- Dynamic Bottom Closure ---
         bottom_line = ""
         for x in range(width):
             bottom_line += BLOCK  # Corner
@@ -126,10 +132,12 @@ class ASCIIVisualizer:
             is_42 = (x, height - 1) in pattern_coords
 
             if is_42:
-                bottom_line += P42 * 2
+                bottom_line += P42 * BODY_WIDTH
             else:
-                bottom_line += (BLOCK * 2) if (cell & SOUTH) else (SPACE * 2)
+                bottom_line += (BLOCK * BODY_WIDTH) if (cell &
+                                                        SOUTH) else (SPACE * BODY_WIDTH)
 
-        bottom_line += BLOCK
+        bottom_line += BLOCK  # Final Corner
         output_lines.append(bottom_line)
+
         return "\n".join(output_lines)

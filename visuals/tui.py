@@ -38,13 +38,14 @@ class MazeApp(App):
         "#ffffff",  # White
     ]
 
-    def __init__(self, generator, entry, exit_point):
+    def __init__(self, generator, entry, exit_point, is_perfect=True):
         super().__init__()
         self.generator = generator
         self.entry = entry
         self.exit_point = exit_point
         self.visualizer = ASCIIVisualizer()
         self.current_color_index = 0
+        self.is_perfect = is_perfect
 
         # Animation State
         self.timer = None
@@ -55,7 +56,7 @@ class MazeApp(App):
         yield Header()
 
         # Initial Rendering
-        self.generator.generate()
+        self.generator.generate(perfect=self.is_perfect)
         self.generator.set_entry_exit(self.entry, self.exit_point)
 
         if self.generator.pattern_42_failed:
@@ -75,7 +76,7 @@ class MazeApp(App):
         current_color = self.COLORS[self.current_color_index]
         styled_maze = Text(maze_str, style=current_color)
         styled_maze.highlight_regex(
-            r"▓+", "bold #FFD700")  # Gold color for 42\
+            r"▒+", "bold #FFD700")  # Gold color for 42\
         styled_maze.highlight_regex(r"●", "bold #00BFFF")
         styled_maze.highlight_regex(r"◉", "bold #FF4500")
         yield Static(styled_maze, classes="maze", id="maze_display")
@@ -84,7 +85,7 @@ class MazeApp(App):
 
     def action_regenerate(self) -> None:
         """Instant regeneration (no animation)."""
-        self.generator.generate()
+        self.generator.generate(perfect=self.is_perfect)
         self.generator.set_entry_exit(self.entry, self.exit_point)
 
         if self.generator.pattern_42_failed:
@@ -105,7 +106,7 @@ class MazeApp(App):
         current_color = self.COLORS[self.current_color_index]
         styled_maze = Text(new_maze_str, style=current_color)
         # 42 embeded pattern color
-        styled_maze.highlight_regex(r"▓+", "bold #FFD700")
+        styled_maze.highlight_regex(r"▒+", "bold #FFD700")
         # entry dot color
         styled_maze.highlight_regex(r"●", "bold #00BFFF")
         # exit dot color
@@ -129,7 +130,7 @@ class MazeApp(App):
         )
 
         styled_maze = Text(raw_maze_str, style=new_color)
-        styled_maze.highlight_regex(r"▓+", "bold #FFD700")
+        styled_maze.highlight_regex(r"▒+", "bold #FFD700")
         styled_maze.highlight_regex(r"●", "bold #00BFFF")
         styled_maze.highlight_regex(r"◉", "bold #FF4500")
 
@@ -143,7 +144,7 @@ class MazeApp(App):
         if self.timer:
             self.timer.stop()
         # 2. Reset the Generator (Calculate the full path instantly)
-        self.generator.generate()
+        self.generator.generate(perfect=self.is_perfect)
         self.generator.set_entry_exit(self.entry, self.exit_point)
         # 3. Reset the Display Grid to 'Blank Canvas' (All Walls = 15)
         w, h = self.generator.width, self.generator.height
@@ -179,7 +180,7 @@ class MazeApp(App):
         # 4. Apply Color and Update
         current_color = self.COLORS[self.current_color_index]
         styled_maze = Text(maze_str, style=current_color)
-        styled_maze.highlight_regex(r"▓+", "bold #FFD700")
+        styled_maze.highlight_regex(r"▒+", "bold #FFD700")
         styled_maze.highlight_regex(r"●", "bold #00BFFF")
         styled_maze.highlight_regex(r"◉", "bold #FF4500")
 
