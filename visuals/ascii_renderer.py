@@ -53,9 +53,15 @@ class ASCIIVisualizer:
         output_lines.append(bottom_line)
         return "\n".join(output_lines)
 
-    def render_thick(self, grid: List[List[int]], pattern_coords: set = None, entry: tuple = None, exit: tuple = None) -> str:
+    def render_thick(
+        self,
+        grid: List[List[int]],
+        pattern_coords: set = None,
+        entry: tuple = None,
+        exit: tuple = None
+    ) -> str:
         """
-        Renders the maze with ULTRA-WIDE cells (6 chars wide) to force a square look.
+        Renders the maze with ULTRA-WIDE cells (6 chars wide)
         """
         if pattern_coords is None:
             pattern_coords = set()
@@ -100,8 +106,10 @@ class ASCIIVisualizer:
                     line_top += wall_brush * BODY_WIDTH
                 else:
                     # North Wall or Open Space
-                    line_top += (BLOCK * BODY_WIDTH) if (cell &
-                                                         NORTH) else (SPACE * BODY_WIDTH)
+                    if cell & NORTH:
+                        line_top += BLOCK * BODY_WIDTH
+                    else:
+                        line_top += SPACE * BODY_WIDTH
 
                 # --- Bottom Half ---
                 # West Wall (1 char)
@@ -137,8 +145,10 @@ class ASCIIVisualizer:
             if is_42:
                 bottom_line += P42 * BODY_WIDTH
             else:
-                bottom_line += (BLOCK * BODY_WIDTH) if (cell &
-                                                        SOUTH) else (SPACE * BODY_WIDTH)
+                if cell & SOUTH:
+                    bottom_line += BLOCK * BODY_WIDTH
+                else:
+                    bottom_line += SPACE * BODY_WIDTH
 
         bottom_line += BLOCK  # Final Corner
         output_lines.append(bottom_line)

@@ -73,7 +73,10 @@ class MazeGenerator:
         if not perfect:
             self.make_imperfect()
 
-    def set_entry_exit(self, entry: Tuple[int, int], exit: Tuple[int, int]) -> None:
+    def set_entry_exit(
+            self,
+            entry: Tuple[int, int],
+            exit: Tuple[int, int]) -> None:
         self._validate_border_point(entry, "Entry")
         self._validate_border_point(exit, "Exit")
 
@@ -85,7 +88,11 @@ class MazeGenerator:
 
     # --- Internal Helper Methods ---
 
-    def _get_unvisited_neighbors(self, x: int, y: int, visited: set) -> List[Tuple[int, int, int]]:
+    def _get_unvisited_neighbors(
+            self,
+            x: int,
+            y: int,
+            visited: set) -> List[Tuple[int, int, int]]:
         neighbors = []
         if y > 0 and (x, y - 1) not in visited:
             neighbors.append((x, y - 1, self.NORTH))
@@ -97,7 +104,14 @@ class MazeGenerator:
             neighbors.append((x - 1, y, self.WEST))
         return neighbors
 
-    def _remove_wall(self, x1: int, y1: int, x2: int, y2: int, direction: int,  record_history: bool = True) -> None:
+    def _remove_wall(
+            self,
+            x1: int,
+            y1: int,
+            x2: int,
+            y2: int,
+            direction: int,
+            record_history: bool = True) -> None:
         self.grid[y1][x1] &= ~direction
 
         opposite_direction = 0
@@ -118,11 +132,16 @@ class MazeGenerator:
                 (x2, y2, self.grid[y2][x2])
             ])
 
-    def _validate_border_point(self, point: Tuple[int, int], name: str) -> None:
+    def _validate_border_point(
+            self,
+            point: Tuple[int, int],
+            name: str) -> None:
         x, y = point
         if not (0 <= x < self.width and 0 <= y < self.height):
             raise ValueError(f"{name} {point} is outside maze bounds.")
-        if not (x == 0 or x == self.width - 1 or y == 0 or y == self.height - 1):
+        is_on_border = (x == 0 or x == self.width - 1 or
+                        y == 0 or y == self.height - 1)
+        if not is_on_border:
             raise ValueError(f"{name} {point} must be on the maze border.")
 
     def _embed_42(self, visited: set) -> None:

@@ -1,45 +1,18 @@
 import sys
 from typing import Dict, Tuple, Any
 
-# Define the set of keys that must be present in the config file
 MANDATORY_KEYS = {
     "WIDTH", "HEIGHT", "ENTRY", "EXIT", "PERFECT", "OUTPUT_FILE"
 }
 
 
 def load_config(filepath: str) -> Dict[str, Any]:
-    """
-    Parses and validates the maze generation configuration file.
-
-    Reads key-value pairs from the file, ignores comments, converts types,
-    and performs strict validation on maze constraints (dimensions and borders).
-
-    Args:
-        filepath: The path to the configuration file (e.g., "config.txt").
-
-    Returns:
-        A dictionary containing the validated configuration with correct types:
-        - WIDTH (int)
-        - HEIGHT (int)
-        - ENTRY (tuple[int, int])
-        - EXIT (tuple[int, int])
-        - PERFECT (bool)
-        - OUTPUT_FILE (str)
-
-    Raises:
-        SystemExit: If the file is missing, syntax is invalid, or values
-                    violate constraints (exits with status 1).
-    """
     raw_config = _read_and_parse_raw_file(filepath)
     validated_config = _validate_and_convert(raw_config)
     return validated_config
 
 
 def _read_and_parse_raw_file(filepath: str) -> Dict[str, str]:
-    """
-    Step 1: Reads the file and extracts raw KEY=VALUE strings.
-    Handles file I/O errors and basic syntax checking.
-    """
     raw_config = {}
 
     try:
@@ -66,7 +39,7 @@ def _read_and_parse_raw_file(filepath: str) -> Dict[str, str]:
             print(f"       Expected 'KEY=VALUE', found: '{clean_line}'")
             sys.exit(1)
 
-        # Split only on the first '=' to allow '=' in values (unlikely but safe)
+        # Split only on the first '=' to allow '=' in values
         key, value = clean_line.split('=', 1)
         key = key.strip()
         value = value.strip()
