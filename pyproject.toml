@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mazegen"
+version = "1.0.0"
+description = "A maze generation and solving library for 42 Project."
+readme = "Readme.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "azahidi", email = "azahidi@student.1337.ma", name2= "abendiro" , email2 ="abendiro@student.1337.ma" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/shadythegiant/A_Maze_ing"
+
+[tool.setuptools]
+packages = ["mazegen"]
