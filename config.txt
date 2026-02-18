@@ -1,5 +1,5 @@
 WIDTH=20
-HEIGHT=20
+HEIGHT=10
 
 # Entry on the Right Border (x=4)
 ENTRY=0,1

@@ -1,6 +1,8 @@
 import sys
 from config.loader import load_config
 from mazegen.generator import MazeGenerator
+from mazegen.solver import solve
+from hex_output.output_file import output_hex
 from visuals.tui import MazeApp
 
 
@@ -25,6 +27,7 @@ def main():
     entry = config['ENTRY']
     exit_point = config['EXIT']
     is_perfect = config.get('PERFECT', True)
+    output_file = config['OUTPUT_FILE']
     # 3. Initialize Generator Logic
     # We create the instance, but we don't run .generate() yet.
     # The App will handle that.
@@ -39,6 +42,8 @@ def main():
     # The App takes ownership of the generator instance.
     app = MazeApp(maze_gen, entry, exit_point, is_perfect)
     app.run()
+    solver = solve(maze_gen.get_grid(), entry, exit_point)
+    output_hex(output_file, maze_gen.get_grid(), entry, exit_point, solver)
 
 
 if __name__ == "__main__":

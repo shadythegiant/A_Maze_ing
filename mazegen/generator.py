@@ -5,6 +5,7 @@ from typing import List, Tuple, Optional
 class MazeGenerator:
     """
     Core logic for generating perfect mazes using bitmask representation.
+    Supports multiple algorithms (DFS, Prims).
     """
 
     NORTH: int = 1
@@ -36,28 +37,69 @@ class MazeGenerator:
         self.pattern_42_coords = set()
         self.pattern_42_failed = False
 
-    def generate(self, perfect: bool = True) -> None:  # <--- Updated Signature
-        """
-        Executes the generation algorithm.
-        """
-        # 1. Reset Grid
-        self.grid = [[15 for _ in range(self.width)]
-                     for _ in range(self.height)]
+        # ALGORITHM REGISTRY
+        # Maps string names to the actual internal methods
+        self.algos = {
+            "DFS": self._generate_dfs,
+            "Prims": self._generate_prims
+        }
+
+    def _reset(self) -> None:
+        """Helper to clear grid and history before any generation."""
+        self.grid = [
+            [self.ALL_WALLS for _ in range(self.width)]
+            for _ in range(self.height)
+        ]
         self.history = []
         self.pattern_42_coords = set()
         self.pattern_42_failed = False
 
-        start_x, start_y = 0, 0
-        stack = [(start_x, start_y)]
-        visited = set()
-        visited.add((start_x, start_y))
+    def generate(self, algo: str = "DFS", perfect: bool = True) -> None:
+        """
+        Master generation method.
+        1. Resets the grid.
+        2. Embeds the '42' pattern.
+        3. Dispatches the chosen algorithm (DFS or Prims).
+        4. Applies imperfection if requested.
+        """
+        # Fallback if algo name is wrong
+        if algo not in self.algos:
+            print(f"Warning: Algo '{algo}' not found. Defaulting to DFS.")
+            algo = "DFS"
 
-        # Embed the '42' pattern
+        # 1. Reset
+        self._reset()
+
+        # 2. Setup Visited & Embed 42
+        # We start with a fresh visited set.
+        # _embed_42 will mark the '42' cells as visited so algos don't break them.
+        visited = set()
         self._embed_42(visited)
 
-        # 2. Generate Perfect Maze (Recursive Backtracker)
+        # 3. Run the selected algorithm
+        # We pass 'visited' so the algo knows about the 42 pattern walls.
+        self.algos[algo](visited)
+
+        # 4. Handle Imperfect
+        if not perfect:
+            self.make_imperfect()
+
+    def _generate_dfs(self, visited: set) -> None:
+        """
+        Implementation of Recursive Backtracker (DFS).
+        Adapted from your original generate() method.
+        """
+        start_x, start_y = 0, 0
+
+        # If start is inside 42 pattern (rare), find a valid start
+        if (start_x, start_y) in visited:
+            # Just a fallback, though (0,0) is usually safe
+            pass
+
+        visited.add((start_x, start_y))
+        stack = [(start_x, start_y)]
+
         while stack:
-            # ... (Existing loop code remains exactly the same) ...
             current_x, current_y = stack[-1]
             unvisited_neighbors = self._get_unvisited_neighbors(
                 current_x, current_y, visited)
@@ -70,8 +112,41 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-        if not perfect:
-            self.make_imperfect()
+    def _generate_prims(self, visited: set) -> None:
+        """
+        Implementation of Randomized Prim's Algorithm.
+        """
+        start_x, start_y = 0, 0
+        visited.add((start_x, start_y))
+
+        # Frontier stores tuples: (target_x, target_y, source_x, source_y, direction)
+        frontier = []
+
+        def add_frontier(cx, cy):
+            moves = [
+                (0, -1, self.NORTH), (0, 1, self.SOUTH),
+                (1, 0, self.EAST), (-1, 0, self.WEST)
+            ]
+            for dx, dy, direction in moves:
+                nx, ny = cx + dx, cy + dy
+                if 0 <= nx < self.width and 0 <= ny < self.height:
+                    if (nx, ny) not in visited:
+                        frontier.append((nx, ny, cx, cy, direction))
+
+        # Initialize frontier around start
+        add_frontier(start_x, start_y)
+
+        while frontier:
+            # Pop a random edge from the frontier
+            idx = self._rng.randint(0, len(frontier) - 1)
+            tx, ty, sx, sy, direction = frontier.pop(idx)
+
+            if (tx, ty) not in visited:
+                visited.add((tx, ty))
+                # Carve path from Source to Target
+                self._remove_wall(sx, sy, tx, ty, direction)
+                # Add new neighbors to frontier
+                add_frontier(tx, ty)
 
     def set_entry_exit(
             self,
@@ -147,7 +222,6 @@ class MazeGenerator:
     def _embed_42(self, visited: set) -> None:
         """
         Embeds a COMPACT '42' pattern (3x5 pixels).
-        This is the smallest size that keeps the '2' legible.
         Total Size: 7 wide x 5 high.
         """
         pat_4 = {
@@ -167,7 +241,7 @@ class MazeGenerator:
         }
 
         # Dimensions
-        pat_width = 7  # 3 (digit) + 1 (gap) + 3 (digit)
+        pat_width = 7
         pat_height = 5
 
         # Safety Check
@@ -195,56 +269,40 @@ class MazeGenerator:
     def make_imperfect(self) -> None:
         """
         Randomly breaks a few internal walls to create loops.
-        Does NOT scan the whole grid.
         """
         walls_to_break = max(
             1, int((self.width * self.height) * 0.03))
         count = 0
-        max_attempts = 500  # Safety break to prevent infinite loops
+        max_attempts = 500
         attempts = 0
 
         while count < walls_to_break and attempts < max_attempts:
             attempts += 1
 
-            # 1. Pick a RANDOM spot (No looping through grid!)
             x = self._rng.randint(0, self.width - 1)
             y = self._rng.randint(0, self.height - 1)
 
-            # Don't touch the '42' pattern
             if (x, y) in self.pattern_42_coords:
                 continue
 
-            # 2. Identify neighbors we *could* connect to
             valid_walls = []
-
-            # Check North (If there is a wall, we can break it)
             if y > 0 and (self.grid[y][x] & self.NORTH):
                 valid_walls.append((x, y - 1, self.NORTH))
-
-            # Check South
             if y < self.height - 1 and (self.grid[y][x] & self.SOUTH):
                 valid_walls.append((x, y + 1, self.SOUTH))
-
-            # Check East
             if x < self.width - 1 and (self.grid[y][x] & self.EAST):
                 valid_walls.append((x + 1, y, self.EAST))
-
-            # Check West
             if x > 0 and (self.grid[y][x] & self.WEST):
                 valid_walls.append((x - 1, y, self.WEST))
 
             if not valid_walls:
                 continue
 
-            # 3. Pick one random wall to attempt breaking
             nx, ny, direction = self._rng.choice(valid_walls)
 
-            # Don't break into '42'
             if (nx, ny) in self.pattern_42_coords:
                 continue
 
-            # 4. Check the 3x3 Rule
-            # We temporarily break it, check safety, and revert if bad.
             self._remove_wall(x, y, nx, ny, direction, record_history=False)
             self.history.append([
                 (x, y, self.grid[y][x]),

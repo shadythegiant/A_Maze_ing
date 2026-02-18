@@ -57,14 +57,15 @@ class ASCIIVisualizer:
         self,
         grid: List[List[int]],
         pattern_coords: set = None,
+        solution_path: set = None,
         entry: tuple = None,
         exit: tuple = None
     ) -> str:
-        """
-        Renders the maze with ULTRA-WIDE cells (6 chars wide)
-        """
+
         if pattern_coords is None:
             pattern_coords = set()
+        if solution_path is None:
+            solution_path = set()
 
         NORTH, SOUTH, WEST = 1, 4, 8
         height = len(grid)
@@ -72,14 +73,17 @@ class ASCIIVisualizer:
 
         output_lines = []
 
-        BLOCK = '█'
-        SPACE = ' '
-        P42 = '▒'
-        BODY_WIDTH = 5
+        # CHARACTERS
+        BLOCK = '█'      # Wall
+        SPACE = ' '      # Empty
+        P42 = '▒'        # 42 Pattern
+        PATH_CHAR = '▓'  # <--- New "Dense" block for the path
 
-        # Centered markers for 5-space width
-        ENTRY_MARKER = '  ●  '
-        EXIT_MARKER = '  ◉  '
+        BODY_WIDTH = 3
+
+        # Markers
+        ENTRY_MARKER = '●'.center(BODY_WIDTH)
+        EXIT_MARKER = '◉'.center(BODY_WIDTH)
 
         for y in range(height):
             line_top = ""
@@ -87,58 +91,82 @@ class ASCIIVisualizer:
 
             for x in range(width):
                 cell = grid[y][x]
-                is_42 = (x, y) in pattern_coords
 
-                # --- Determine Center Content ---
+                # --- Booleans for checks ---
+                is_42 = (x, y) in pattern_coords
+                is_path = (x, y) in solution_path
+
+                # Check Neighbors for Path Connectivity
+                # We connect North if: I am path, neighbor above is path, and no wall exists
+                path_north = is_path and (
+                    (x, y - 1) in solution_path) and not (cell & NORTH)
+
+                # We connect West if: I am path, neighbor left is path, and no wall exists
+                path_west = is_path and (
+                    (x - 1, y) in solution_path) and not (cell & WEST)
+
+                # --- CENTER CONTENT ---
                 if (x, y) == entry:
                     center_char = ENTRY_MARKER
                 elif (x, y) == exit:
                     center_char = EXIT_MARKER
+                elif is_path:
+                    # DRAW SOLID BLOCK!
+                    center_char = PATH_CHAR * BODY_WIDTH
                 else:
                     center_char = SPACE * BODY_WIDTH
 
                 wall_brush = P42 if is_42 else BLOCK
 
-                # --- Top Half ---
-                line_top += wall_brush  # Corner (1 char)
+                # --- TOP HALF (North Wall Area) ---
+                line_top += wall_brush  # Corner is always a wall block
 
                 if is_42:
                     line_top += wall_brush * BODY_WIDTH
+                elif path_north:
+                    # CONNECT PATH NORTH
+                    line_top += PATH_CHAR * BODY_WIDTH
+                elif cell & NORTH:
+                    line_top += BLOCK * BODY_WIDTH
                 else:
-                    # North Wall or Open Space
-                    if cell & NORTH:
-                        line_top += BLOCK * BODY_WIDTH
-                    else:
-                        line_top += SPACE * BODY_WIDTH
+                    line_top += SPACE * BODY_WIDTH
 
-                # --- Bottom Half ---
-                # West Wall (1 char)
+                # --- BOTTOM HALF (West Wall Area + Center) ---
+
+                # 1. The West Wall Slot
                 if is_42:
                     line_bot += wall_brush
+                elif path_west:
+                    # CONNECT PATH WEST
+                    line_bot += PATH_CHAR
+                elif cell & WEST:
+                    line_bot += BLOCK
                 else:
-                    line_bot += BLOCK if (cell & WEST) else SPACE
+                    line_bot += SPACE
 
-                # Center Body (5 chars)
+                # 2. The Center Slot
                 if is_42:
                     line_bot += wall_brush * BODY_WIDTH
                 else:
                     line_bot += center_char
 
-            # Close Right Edge
+            # --- CLOSE RIGHT EDGE ---
             line_top += BLOCK
+
+            # Check if Right Wall needs 42 styling
             if is_42 and (width-1, y) in pattern_coords:
                 line_bot += P42
             else:
+                # Standard Right Wall
                 line_bot += BLOCK if (grid[y][width - 1] & 2) else SPACE
 
             output_lines.append(line_top)
             output_lines.append(line_bot)
 
-        # --- Dynamic Bottom Closure ---
+        # --- BOTTOM CLOSURE ---
         bottom_line = ""
         for x in range(width):
-            bottom_line += BLOCK  # Corner
-
+            bottom_line += BLOCK
             cell = grid[height - 1][x]
             is_42 = (x, height - 1) in pattern_coords
 
@@ -150,7 +178,7 @@ class ASCIIVisualizer:
                 else:
                     bottom_line += SPACE * BODY_WIDTH
 
-        bottom_line += BLOCK  # Final Corner
+        bottom_line += BLOCK
         output_lines.append(bottom_line)
 
         return "\n".join(output_lines)
