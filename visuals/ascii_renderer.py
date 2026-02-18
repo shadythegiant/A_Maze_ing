@@ -77,7 +77,7 @@ class ASCIIVisualizer:
         BLOCK = '█'      # Wall
         SPACE = ' '      # Empty
         P42 = '▒'        # 42 Pattern
-        PATH_CHAR = '▓'  # <--- New "Dense" block for the path
+        PATH_CHAR = '▓'  # Path Block
 
         BODY_WIDTH = 3
 

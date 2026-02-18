@@ -27,6 +27,7 @@ class MazeApp(App):
         ("q", "quit", "Quit"),
         ("r", "regenerate", "Regenerate"),
         ("c", "toggle_color", "Change Color"),
+        ("p", "toggle_42_color", "Change 42 Color"),
         ("a", "animate_gen", "Animate Gen"),
         ("s", "toggle_solve", "Show/Hide Path"),
         ("v", "animate_solve", "Animate Solution"),
@@ -41,6 +42,16 @@ class MazeApp(App):
         "#ffff00",  # Yellow
         "#ffffff",  # White
     ]
+    # 42 pattern colors:
+    PATTERN_COLORS = [
+        "#FFD700",
+        "#FF0000",
+        "#5B5B5D",
+        "#FF00FF",
+        "#00FF00",
+        "#FFFFFF",
+        "#FF1493",
+    ]
 
     def __init__(self, generator, entry, exit_point, is_perfect=True):
         super().__init__()
@@ -49,6 +60,7 @@ class MazeApp(App):
         self.exit_point = exit_point
         self.visualizer = ASCIIVisualizer()
         self.current_color_index = 0
+        self.current_pattern_index = 0
         self.is_perfect = is_perfect
         self.animation_mode = None  # 'GEN' or 'SOLVE'
         self.full_solution_list = []  # Stores the full snake to draw
@@ -110,10 +122,12 @@ class MazeApp(App):
         )
 
         current_color = self.COLORS[self.current_color_index]
+        pattern_color = self.PATTERN_COLORS[self.current_pattern_index]
         styled_maze = Text(maze_str, style=current_color)
 
         # Highlights
-        styled_maze.highlight_regex(r"▒+", "bold #FFD700")  # 42 Pattern
+        styled_maze.highlight_regex(
+            r"▒+", f"bold {pattern_color}")  # 42 Pattern
         styled_maze.highlight_regex(r"●", "bold #00BFFF")  # Entry
         styled_maze.highlight_regex(r"◉", "bold #FF4500")  # Exit
 
@@ -277,3 +291,9 @@ class MazeApp(App):
 
         # 3. Trigger Regenerate to show the new result immediately
         self.action_regenerate()
+
+    def action_toggle_42_color(self) -> None:
+        """Cycle colors for the 42 pattern."""
+        self.current_pattern_index = (
+            self.current_pattern_index + 1) % len(self.PATTERN_COLORS)
+        self._refresh_maze_view()
