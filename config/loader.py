@@ -106,7 +106,7 @@ def _validate_and_convert(raw_config: Dict[str, str]) -> Dict[str, Any]:
         sys.exit(1)
     # optional seed value
     seed_val = raw_config.get('SEED')
-    if seed_val:  # Checks if it exists AND is not an empty string
+    if seed_val != "None":  # Checks if it exists AND is not an empty string
         try:
             config['SEED'] = int(seed_val)
         except ValueError:
