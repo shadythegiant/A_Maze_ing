@@ -28,12 +28,14 @@ def main():
     exit_point = config['EXIT']
     is_perfect = config.get('PERFECT', True)
     output_file = config['OUTPUT_FILE']
+    seed = config['SEED']
     # 3. Initialize Generator Logic
     # We create the instance, but we don't run .generate() yet.
     # The App will handle that.
     print(f"Initializing {width}x{height} MazeGenerator...")
     try:
-        maze_gen = MazeGenerator(width, height)
+        maze_gen = MazeGenerator(width, height, seed=seed)
+
     except ValueError as e:
         print(f"Initialization Error: {e}")
         sys.exit(1)

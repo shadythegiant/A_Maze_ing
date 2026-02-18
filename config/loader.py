@@ -104,6 +104,16 @@ def _validate_and_convert(raw_config: Dict[str, str]) -> Dict[str, Any]:
     if config['ENTRY'] == config['EXIT']:
         print("Error: ENTRY and EXIT cannot be the same coordinate.")
         sys.exit(1)
+    # optional seed value
+    seed_val = raw_config.get('SEED')
+    if seed_val:  # Checks if it exists AND is not an empty string
+        try:
+            config['SEED'] = int(seed_val)
+        except ValueError:
+            print(f"Error: SEED must be a valid integer. Found: '{seed_val}'")
+            sys.exit(1)
+    else:
+        config['SEED'] = None
 
     return config
 

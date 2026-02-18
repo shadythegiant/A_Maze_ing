@@ -1,11 +1,7 @@
 WIDTH=20
 HEIGHT=10
-
-# Entry on the Right Border (x=4)
 ENTRY=0,1
-
-# Exit on the Left Border (x=0)
 EXIT=19,4
-
 PERFECT=True
 OUTPUT_FILE=maze.txt
+
