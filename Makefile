@@ -1,5 +1,5 @@
 NAME = a_maze_ing.py
-VENV = env
+VENV = .venv
 
 all: run
 install:
