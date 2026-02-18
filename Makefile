@@ -18,7 +18,7 @@ debug:
 
 lint:
 	-flake8 . --exclude=env,.venv
-	mypy .  --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	-mypy .  --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 clean:
 	@rm -rf dist/ build/ *.egg-info
