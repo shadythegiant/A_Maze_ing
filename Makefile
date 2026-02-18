@@ -3,7 +3,7 @@ VENV = .venv
 
 all: run
 install:
-	pip install --upgrade pip build
+	pip install --upgrade pip build setuptools wheel
 	python3 -m build --sdist
 	cp dist/mazegen-*.tar.gz mazegen.tar.gz
 	pip install textual
