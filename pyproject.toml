@@ -9,7 +9,8 @@ description = "A maze generation and solving library for 42 Project."
 readme = "Readme.md"
 requires-python = ">=3.10"
 authors = [
-  { name = "azahidi", email = "azahidi@student.1337.ma", name2= "abendiro" , email2 ="abendiro@student.1337.ma" },
+  { name = "azahidi", email = "azahidi@student.1337.ma" },
+  {name = "abendrio", email = "abendrio@student.1337.ma"}
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -21,3 +22,4 @@ classifiers = [
 
 [tool.setuptools]
 packages = ["mazegen"]
+
