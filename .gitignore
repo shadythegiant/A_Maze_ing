@@ -46,3 +46,6 @@ htmlcov/
 # Misc
 .env
 *.log
+
+mazegen.egg-info/
+.mypy_cache/
