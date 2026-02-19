@@ -9,7 +9,10 @@ def solve(grid: list[list[int]], start: tuple[int, int],
     is first it store the current sell cords in the key section
     and store the cords of prev cels before reach this current cell
     """
-    visted_cur_from = {start: (None, None, "")}
+    visted_cur_from: dict[
+        tuple[int, int],
+        tuple[int | None, int | None, str]
+    ] = {start: (None, None, "")}
     """
     list of all possible moves in cell (up, down, left, right) represend
     by char key word to indicat wish direction next
@@ -58,7 +61,8 @@ def path_investgater(visited: dict, end: tuple[int, int]) -> str:
     return "".join(path[::-1])
 
 
-def solve_to_coords(grid: list[list[int]], start: tuple, end: tuple) -> list[tuple]:
+def solve_to_coords(grid: list[list[int]],
+                    start: tuple, end: tuple) -> list[tuple]:
     """
     Returns the solution as a list of coordinates: [(0,0), (0,1), (1,1)...]
     Useful for animation.

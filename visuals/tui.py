@@ -3,6 +3,7 @@ from textual.widgets import Header, Footer, Static
 from .ascii_renderer import ASCIIVisualizer
 from rich.text import Text
 from mazegen.solver import solve, solve_to_coords
+from typing import Any, Tuple, List, Set, Optional
 
 
 class MazeApp(App):
@@ -53,7 +54,13 @@ class MazeApp(App):
         "#FF1493",
     ]
 
-    def __init__(self, generator, entry, exit_point, is_perfect=True):
+    def __init__(
+        self,
+        generator: Any,
+        entry: Tuple[int, int],
+        exit_point: Tuple[int, int],
+        is_perfect: bool = True
+    ) -> None:
         super().__init__()
         self.generator = generator
         self.entry = entry
@@ -62,17 +69,18 @@ class MazeApp(App):
         self.current_color_index = 0
         self.current_pattern_index = 0
         self.is_perfect = is_perfect
-        self.animation_mode = None  # 'GEN' or 'SOLVE'
-        self.full_solution_list = []  # Stores the full snake to draw
+        self.animation_mode: Optional[str] = None   # 'GEN' or 'SOLVE'
+        # Stores the full snake to draw
+        self.full_solution_list: List[Tuple[int, int]] = []
 
         # Animation State
-        self.timer = None
-        self.display_grid = []
+        self.timer: Optional[Any] = None
+        self.display_grid: List[List[int]] = []
         self.step_index = 0
 
         # Solver State
         self.show_path = False
-        self.solution_coords = set()
+        self.solution_coords: Set[Tuple[int, int]] = set()
 
         # ALGO STATE
         # We get the list of keys ["DFS", "Prims"] from the generator
@@ -198,7 +206,7 @@ class MazeApp(App):
 
     def action_animate_gen(self) -> None:
         """Starts animation."""
-        if self.timer:
+        if self.timer is not None:
             self.timer.stop()
 
         self.animation_mode = 'GEN'
@@ -220,7 +228,7 @@ class MazeApp(App):
 
     def action_animate_solve(self) -> None:
         """Starts SOLUTION SNAKE animation."""
-        if self.timer:
+        if self.timer is not None:
             self.timer.stop()
 
         # 1. Solve instantly to get the full path list
@@ -250,7 +258,8 @@ class MazeApp(App):
         if self.animation_mode == 'GEN':
             history = self.generator.history
             if self.step_index >= len(history):
-                self.timer.stop()
+                if self.timer is not None:
+                    self.timer.stop()
                 self.animation_mode = None
                 return
 
@@ -262,7 +271,8 @@ class MazeApp(App):
         # --- CASE 2: Animating Solution Snake ---
         elif self.animation_mode == 'SOLVE':
             if self.step_index >= len(self.full_solution_list):
-                self.timer.stop()
+                if self.timer is not None:
+                    self.timer.stop()
                 self.animation_mode = None
                 return
 
@@ -274,7 +284,7 @@ class MazeApp(App):
         # Update Screen
         self._refresh_maze_view()
 
-    def _update_title(self):
+    def _update_title(self) -> None:
         """Optional: Update window title to show current algo"""
         self.title = f"A-Maze-Ing | Algo: {self.current_algo_name}"
 

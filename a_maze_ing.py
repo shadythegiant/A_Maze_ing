@@ -6,7 +6,7 @@ from hex_output.output_file import output_hex
 from visuals.tui import MazeApp
 
 
-def main():
+def main() -> None:
     # 1. Argument Validation
     if len(sys.argv) != 2:
         print("Usage: python3 a_maze_ing.py <config_file>")

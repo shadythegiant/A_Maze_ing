@@ -1,4 +1,10 @@
-def output_hex(file_name, grid, entry, end, solver_str):
+def output_hex(
+    file_name: str,
+    grid: list[list[int]],
+    entry: tuple[int, int],
+    end: tuple[int, int],
+    solver_str: str
+) -> None:
     try:
         with open(file_name, 'w') as f:
             for row in grid:

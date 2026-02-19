@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set, Tuple, Optional
 
 
 class ASCIIVisualizer:
@@ -56,10 +56,10 @@ class ASCIIVisualizer:
     def render_thick(
         self,
         grid: List[List[int]],
-        pattern_coords: set = None,
-        solution_path: set = None,
-        entry: tuple = None,
-        exit: tuple = None
+        pattern_coords: Optional[Set[Tuple[int, int]]] = None,
+        solution_path: Optional[Set[Tuple[int, int]]] = None,
+        entry: Optional[Tuple[int, int]] = None,
+        exit: Optional[Tuple[int, int]] = None
     ) -> str:
 
         if pattern_coords is None:
@@ -97,11 +97,13 @@ class ASCIIVisualizer:
                 is_path = (x, y) in solution_path
 
                 # Check Neighbors for Path Connectivity
-                # We connect North if: I am path, neighbor above is path, and no wall exists
+                # We connect North if: I am path, neighbor above is path, and
+                # no wall exists
                 path_north = is_path and (
                     (x, y - 1) in solution_path) and not (cell & NORTH)
 
-                # We connect West if: I am path, neighbor left is path, and no wall exists
+                # We connect West if: I am path, neighbor left is path, and no
+                # wall exists
                 path_west = is_path and (
                     (x - 1, y) in solution_path) and not (cell & WEST)
 
@@ -154,7 +156,7 @@ class ASCIIVisualizer:
             line_top += BLOCK
 
             # Check if Right Wall needs 42 styling
-            if is_42 and (width-1, y) in pattern_coords:
+            if is_42 and (width - 1, y) in pattern_coords:
                 line_bot += P42
             else:
                 # Standard Right Wall

@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Set
 
 
 class MazeGenerator:
@@ -32,9 +32,9 @@ class MazeGenerator:
             [self.ALL_WALLS for _ in range(width)] for _ in range(height)
         ]
         # history list for the animation logic in visuals/tui.py
-        self.history = []
+        self.history: List[List[Tuple[int, int, int]]] = []
         # set for the 42 pattern coords
-        self.pattern_42_coords = set()
+        self.pattern_42_coords: Set[Tuple[int, int]] = set()
         self.pattern_42_failed = False
 
         # ALGORITHM REGISTRY
@@ -72,8 +72,9 @@ class MazeGenerator:
 
         # 2. Setup Visited & Embed 42
         # We start with a fresh visited set.
-        # _embed_42 will mark the '42' cells as visited so algos don't break them.
-        visited = set()
+        # _embed_42 will mark the '42' cells as visited so algos don't break
+        # them.
+        visited: Set[Tuple[int, int]] = set()
         self._embed_42(visited)
 
         # 3. Run the selected algorithm
@@ -84,7 +85,7 @@ class MazeGenerator:
         if not perfect:
             self.make_imperfect()
 
-    def _generate_dfs(self, visited: set) -> None:
+    def _generate_dfs(self, visited: Set[Tuple[int, int]]) -> None:
         """
         Implementation of Recursive Backtracker (DFS).
         Adapted from your original generate() method.
@@ -112,17 +113,18 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-    def _generate_prims(self, visited: set) -> None:
+    def _generate_prims(self, visited: Set[Tuple[int, int]]) -> None:
         """
         Implementation of Randomized Prim's Algorithm.
         """
         start_x, start_y = 0, 0
         visited.add((start_x, start_y))
 
-        # Frontier stores tuples: (target_x, target_y, source_x, source_y, direction)
+        # Frontier stores tuples: (target_x, target_y, source_x, source_y,
+        # direction)
         frontier = []
 
-        def add_frontier(cx, cy):
+        def add_frontier(cx: int, cy: int) -> None:
             moves = [
                 (0, -1, self.NORTH), (0, 1, self.SOUTH),
                 (1, 0, self.EAST), (-1, 0, self.WEST)
@@ -167,7 +169,7 @@ class MazeGenerator:
             self,
             x: int,
             y: int,
-            visited: set) -> List[Tuple[int, int, int]]:
+            visited: Set[Tuple[int, int]]) -> List[Tuple[int, int, int]]:
         neighbors = []
         if y > 0 and (x, y - 1) not in visited:
             neighbors.append((x, y - 1, self.NORTH))
@@ -219,7 +221,7 @@ class MazeGenerator:
         if not is_on_border:
             raise ValueError(f"{name} {point} must be on the maze border.")
 
-    def _embed_42(self, visited: set) -> None:
+    def _embed_42(self, visited: Set[Tuple[int, int]]) -> None:
         """
         Embeds a COMPACT '42' pattern (3x5 pixels).
         Total Size: 7 wide x 5 high.
