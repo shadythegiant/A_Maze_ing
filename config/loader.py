@@ -41,7 +41,7 @@ def _read_and_parse_raw_file(filepath: str) -> Dict[str, str]:
 
         # Split only on the first '=' to allow '=' in values
         key, value = clean_line.split('=', 1)
-        key = key.strip()
+        key = key.strip().upper()
         value = value.strip()
 
         if not key:
