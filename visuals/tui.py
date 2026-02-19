@@ -224,7 +224,7 @@ class MazeApp(App):
 
         self.solution_coords = set()
 
-        self.timer = self.set_interval(0.05, self.on_timer_tick)
+        self.timer = self.set_interval(0.01, self.on_timer_tick)
 
     def action_animate_solve(self) -> None:
         """Starts SOLUTION SNAKE animation."""
@@ -249,7 +249,7 @@ class MazeApp(App):
         self.solution_coords = set()  # Start empty
 
         # 4. Start Timer
-        self.timer = self.set_interval(0.05, self.on_timer_tick)
+        self.timer = self.set_interval(0.01, self.on_timer_tick)
 
     def on_timer_tick(self) -> None:
         """Handles both Generation and Solution animations."""
