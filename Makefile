@@ -22,12 +22,15 @@ lint:
 
 clean:
 	@rm -rf dist/ build/ *.egg-info
-	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 
+	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
+
 
 fclean: clean
-	rm -rf $(VENV)
-	rm -f mazegen-*.tar.gz
-
+	@rm -rf $(VENV)
+	@rm -f mazegen-*.tar.gz
+	
 run:
 	python3 $(NAME) config.txt
 

@@ -227,7 +227,7 @@ class MazeApp(App):
         self.timer = self.set_interval(0.01, self.on_timer_tick)
 
     def action_animate_solve(self) -> None:
-        """Starts SOLUTION SNAKE animation."""  
+        """Starts SOLUTION SNAKE animation."""
         if self.timer is not None:
             self.timer.stop()
 
