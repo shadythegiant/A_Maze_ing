@@ -5,54 +5,6 @@ class ASCIIVisualizer:
     """
     Handles converting the bitmask grid into string representations.
     """
-
-    def render(self, grid: List[List[int]]) -> str:
-        """
-        Parses the grid and RETURNS the standard ASCII representation string.
-        """
-        NORTH, SOUTH, WEST = 1, 4, 8
-        height = len(grid)
-        width = len(grid[0]) if height > 0 else 0
-
-        output_lines = []
-
-        for y in range(height):
-            line_roof = ""
-            line_body = ""
-
-            for x in range(width):
-                cell = grid[y][x]
-
-                # Roof
-                line_roof += "+"
-                line_roof += "---" if (cell & NORTH) else "   "
-
-                # Body
-                if cell & WEST:
-                    line_body += "|"
-                else:
-                    line_body += " "
-                line_body += "   "
-
-            # Close the row on the right
-            line_roof += "+"
-            if grid[y][width - 1] & 2:  # Check East
-                line_body += "|"
-            else:
-                line_body += " "
-
-            output_lines.append(line_roof)
-            output_lines.append(line_body)
-
-        # Bottom Closure
-        bottom_line = ""
-        for x in range(width):
-            bottom_line += "+"
-            bottom_line += "---" if (grid[height - 1][x] & SOUTH) else "   "
-        bottom_line += "+"
-        output_lines.append(bottom_line)
-        return "\n".join(output_lines)
-
     def render_thick(
         self,
         grid: List[List[int]],
