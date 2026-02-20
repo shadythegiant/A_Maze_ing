@@ -88,7 +88,6 @@ class MazeGenerator:
     def _generate_dfs(self, visited: Set[Tuple[int, int]]) -> None:
         """
         Implementation of Recursive Backtracker (DFS).
-        Adapted from your original generate() method.
         """
         start_x, start_y = 0, 0
 

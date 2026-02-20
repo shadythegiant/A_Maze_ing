@@ -30,6 +30,7 @@ clean:
 fclean: clean
 	@rm -rf $(VENV)
 	@rm -f mazegen-*.tar.gz
+	@rm -f mazegen*.tar.gz
 	
 run:
 	python3 $(NAME) config.txt
